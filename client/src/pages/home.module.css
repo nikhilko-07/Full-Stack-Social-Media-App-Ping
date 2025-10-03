@@ -1,0 +1,159 @@
+.layoutcontainer {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.rightcolumn{
+    width: 50%;
+}
+@media (min-width: 768px) {
+    .layoutcontainer {
+        flex-direction: row;
+    }
+}
+.backgroundimg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.leftcolumn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 1.5rem;
+    width: 50%;
+}
+@media (min-width: 768px) {
+    .leftcolumn {
+        padding: 2.5rem;
+    }
+}
+@media (min-width: 1024px) {
+    .leftcolumn {
+        padding-left: 10rem;
+    }
+}
+.logoimg {
+    height: 220px;
+    width:  220px;
+    object-fit: contain;
+
+}
+.headericons {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    margin-top: 2.5rem;
+    height: 10%;
+    gap: 0;
+}
+.groupimg {
+    height: 220px;
+    width:  220px;
+    object-fit: fill;
+}
+.starsrow {
+    display: flex;
+}
+.staricon {
+    width: 16px;
+    height: 16px;
+    color: transparent;
+    fill: #FFC107;
+}
+.gradientheading {
+    font-size: 1.875rem;
+    font-weight: bold;
+    background: linear-gradient(to right, #6865FE, #9E32FB);
+    -webkit-background-clip: text;
+    color: transparent;
+    background-clip: text;
+}
+@media (min-width: 768px) {
+    .gradientheading {
+        font-size: 3.75rem;
+    }
+}
+.description {
+    font-size: 1.25rem;
+    color: #3737B7;
+    max-width: 18rem;
+}
+@media (min-width: 768px) {
+    .description {
+        font-size: 1.875rem;
+        max-width: 30rem;
+    }
+}
+.placeholder {
+    height: 120px;
+}
+.right-column {
+    width: 50%;
+}
+.formwrapper {
+    height: 100%;
+    width: 100%;
+    display: grid;
+    place-items: center;
+}
+.formcontent {
+    display: grid;
+    border-radius: 10px;
+    width: 40%;
+    height: 35%;
+    background: white;
+}
+.formheader {
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+}
+.formfields {
+    align-items: center;
+    justify-content: center;
+    background: white;
+    display: grid;
+    width: 100%;
+    gap: 10px;
+}
+.formfields input {
+    width: 300px;
+    height: 40px;
+    padding-left: 0.5rem;
+    font-size: 1rem;
+}
+.formactions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.formlinks {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+.gradientbutton {
+    background: linear-gradient(to right, #6865FE, #9E32FB);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    width: 80%;
+    height: 50%;
+    padding: 0.75rem 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(104,101,254,0.09);
+    transition: background 0.2s;
+}
+.gradientbutton:hover {
+    background: linear-gradient(to right, #7b74ff, #b253fd);
+    color: #FFD700;
+}

@@ -1,0 +1,90 @@
+.wrapperDiv{
+    width: 15%;
+    min-height: 100vh;
+    box-shadow: 0 0.5px 0 0 gray;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.mainContainer{
+    height: 400px;
+    overflow: hidden;
+    min-height: 100vh;
+    object-fit: fill;
+    box-shadow: 1px 1px 5px 0 gray;
+}
+.startDiv{
+    height: 10%;
+    border-bottom: 0.5px solid lightgray;
+}
+.logo{
+    width: 50%;
+    height: 100%;
+    display: flex;
+    object-fit: cover;
+    align-items: center;
+    justify-content: center;
+    place-items: center;
+}
+.midDiv{
+    height: 80%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding-top: 3rem;
+}
+.midDiv button{
+    color: gray;
+    width: 80%;
+    display: flex;
+    gap: 1rem;
+    padding-left: 0.5rem;
+    height: 6%;
+    align-items: center;
+    cursor: pointer;
+    border: none;
+    background-color: white;
+    font-weight: bold;
+}
+.midDiv button:hover{
+    color: #4a43b0;
+    background-color: #EDF2FF;
+    border-radius: 0.5rem;
+}
+
+.createPost {
+    color: white;                /* Text color */
+    border-radius: 0.5rem;         /* More rounded */
+    font-weight: bold;           /* Bolder text */
+    box-shadow: 0 2px 8px rgba(74,67,176,0.15); /* Subtle shadow */
+    transition: background 0.2s;
+    margin-top: 2rem;
+    background: linear-gradient(to right, #6865FE, #9E32FB);
+    justify-content: center;
+}
+
+.createPost:hover {
+    background-color: #372f7c;
+    color: white;
+    box-shadow: 0 4px 12px rgba(74,67,176,0.20);
+}
+
+.endDiv{
+    height: 10%;
+    overflow: hidden;
+    display: flex;
+    text-align: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    align-items: center;
+    gap: 10%;
+    border-top: 0.5px solid lightgray;
+}
+.endDiv button{
+    color: gray;
+    font-size: 1px;
+    border: none;
+    background-color: white;
+}
