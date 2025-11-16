@@ -1,0 +1,104 @@
+.mainContainer {
+  font-family: "Permanent Marker", cursive;
+  border-top: 1px solid rgb(230, 230, 230);
+
+}
+.cmtContainer {
+  max-height: 300px;
+  overflow-y: auto;
+}
+.comment {
+  height: 100%;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  place-items: start;
+  background-color: #ededed;
+  border-radius: 10px;
+  padding: 5px;
+  margin-bottom: 0.2%;
+}
+.userInfo{
+  width: 100%;
+}
+.commentBody {
+  width: 100%;
+  background-color: #EDEDED;
+  border: none;
+  outline: none;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  word-break: break-word;
+  white-space: pre-wrap;
+  padding-right: 4%;
+  margin: 0;
+}
+.profilePicture img {
+  height: 45px;
+  width: 45px;
+  border-radius: 50%;
+}
+.createContainer {
+  padding: 10px;
+  display: flex;
+  gap: 10px;
+}
+.createContainer input {
+  width: 70%;
+  height: 50px;
+  padding-left: 10px;
+  font-size: 1.2rem;
+  border: none;
+  outline: none;
+  background-color: #ededed;
+  transition: 0.3s ease-out, 0.3s ease-out;
+  border-radius: 10px;
+  margin-right: 1%;
+}
+.createContainer input:hover {
+  transform: scale(105%);
+}
+.createContainer button {
+  width: 20%;
+  border: none;
+  outline: none;
+  background-color: #ededed;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.deleteBtn {
+  border: none;
+  display: flex;
+  padding-top: 5px;
+  cursor: pointer;
+}
+.deleteBtn svg {
+  width: 16px;
+  height: 16px;
+  color: red;
+  transition: 0.3s ease-out, 0.3s ease-out;
+
+}
+.deleteBtn svg:hover{
+  transform: scale(130%);
+
+}
+.cmtBtn {
+  color: rgb(0, 161, 0);
+  transition: 0.3s ease-out, 0.3s ease-out;
+}
+.cmtBtn:hover {
+  background-color: rgb(76, 202, 44);
+  color: white;
+  transform: scale(110%);
+}
+.closeBtn {
+  color: red;
+  transition: 0.3s ease-out, 0.3s ease-out;
+}
+.closeBtn:hover {
+  background-color: rgb(255, 100, 100);
+  color: white;
+  transform: scale(110%);
+}
+

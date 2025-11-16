@@ -21,7 +21,7 @@ export const loginUser = createAsyncThunk(
             return thunkAPI.fulfillWithValue(response.data.token);
         }catch(error){
             console.log(error);
-            return thunkAPI.rejectWithValue(error.response.data);
+            return thunkAPI.rejectWithValue(error.message);
         }
     }
 )
@@ -36,11 +36,11 @@ export const registerUser = createAsyncThunk(
                 name: user.name,
             })
 
-            return thunkAPI.fulfillWithValue(response.data);
+            return thunkAPI.fulfillWithValue(response.data.message);
 
         }catch (error) {
             console.log(error);
-            return thunkAPI.rejectWithValue(error);
+            return thunkAPI.rejectWithValue(error.message);
         }
     }
 )
@@ -73,14 +73,79 @@ export const profileFetch = createAsyncThunk(
 export const getOwnProfile = createAsyncThunk(
     "user/getOwnProfile",
     async (_, thunkAPI) => {
-        const raw = localStorage.getItem("token");
-        const token = raw ? raw.replace(/['"]+/g, "") : null;
-        if (!token) return thunkAPI.rejectWithValue("Token not found");
+        try {
+            const raw = localStorage.getItem("token");
+            const token = raw ? raw.replace(/['"]+/g, "") : null;
+            if (!token) return thunkAPI.rejectWithValue("Token not found");
 
-        const response = await clientServer.get("/getOwnProfile", {
-            headers: { Authorization: `Bearer ${token}` },
+            const response = await clientServer.get("/getOwnProfile", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            return thunkAPI.fulfillWithValue(response.data);
+        }catch (error) {
+            console.log(error);
+            return thunkAPI.rejectWithValue(error.message);
+        }
+    }
+);
+
+export const searchUser = createAsyncThunk(
+    "user/searchUser",
+    async(name, thunkAPI)=>{
+        try{
+            const raw = localStorage.getItem("token");
+            const token = raw ? raw.replace(/['"]+/g,"") : null;
+            if(!token)return thunkAPI.rejectWithValue("Token not found...");
+            const response = await clientServer.get(`/searchUser?query=${name}`,{
+                headers:{Authorization : `Bearer ${token}`}
+            })
+            return thunkAPI.fulfillWithValue(response.data);
+        }catch(err){
+            console.log(err);
+            return thunkAPI.rejectWithValue(err.message)
+        }
+    }
+)
+
+export const updateProfilePicture = createAsyncThunk(
+    "user/updateProfilePicture",
+    async (user, thunkAPI)=>{
+        try {
+            const raw = localStorage.getItem("token");
+            const token = raw ? raw.replace(/['"]+/g, "") : null;
+            if (!token) return thunkAPI.rejectWithValue("Token not found");
+            const formData = new FormData();
+            formData.append("profilePicture", user);
+            const response = await clientServer.post("/updateProfilePicture", formData,{
+            headers:{Authorization: `Bearer ${token}`}
         });
+            thunkAPI.dispatch(getOwnProfile())
+            return thunkAPI.fulfillWithValue(response.data.message);
+        }catch(error){
+            console.log(error);
+            return thunkAPI.rejectWithValue("Something went wrong...");
+        }
+    }
+)
 
-        return thunkAPI.fulfillWithValue(response.data);
+export const updateProfileData = createAsyncThunk(
+    "user/updateProfileData",
+    async (data, thunkAPI) => {
+        try {
+            const raw = localStorage.getItem("token");
+            const token = raw ? raw.replace(/['"]+/g, "") : null;
+            if (!token) return thunkAPI.rejectWithValue("Token not found");
+
+            const response = await clientServer.post("/updateProfileData", data, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            thunkAPI.dispatch(getOwnProfile())
+            return thunkAPI.fulfillWithValue(response.data);
+
+        } catch (error) {
+            console.log(error);
+            return thunkAPI.rejectWithValue(error.response?.data?.message || "Something went wrong");
+        }
     }
 );

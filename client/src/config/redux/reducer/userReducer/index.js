@@ -1,5 +1,11 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {getOwnProfile, loginUser, profileFetch} from "@/config/redux/action/userAction";
+import {
+    getOwnProfile,
+    loginUser,
+    profileFetch,
+    searchUser, updateProfileData,
+    updateProfilePicture
+} from "@/config/redux/action/userAction";
 
 
 const initialState={
@@ -14,7 +20,11 @@ const initialState={
     ownProfileFetched:false,
     ownProfileData:{},
     getUserName:{},
-    getOwnPosts:{}
+    getOwnPosts:{},
+    searchResult:[],
+    searchLoading: false,
+    ownSavedPosts:{},
+
 }
 const authSlice = createSlice({
     name:"user",
@@ -70,6 +80,56 @@ const authSlice = createSlice({
                     state.ownProfileData = action.payload.profile;
                     state.getUserName = action.payload.user;
                     state.getOwnPosts = action.payload.profile.ownPosts;
+                    state.ownSavedPosts = action.payload.profile.savedPosts;
+                })
+                .addCase(searchUser.rejected, (state, action)=>{
+                    state.isLoading = false;
+                    state.isError = true;
+                    state.searchLoading = false;
+                    state.message = "Something went wrong at searchUser"
+                })
+                .addCase(searchUser.pending, (state, action)=>{
+                    state.isLoading = true;
+                    state.searchLoading = true;
+                    state.isError = false;
+                    state.message = "Knocking the door..."
+                })
+                .addCase(searchUser.fulfilled, (state, action)=>{
+                    state.isLoading = false;
+                    state.searchLoading = false;
+                    state.message = "Fetched the User"
+                    state.isError = false;
+                    state.searchResult = action.payload;
+                })
+                .addCase(updateProfilePicture.pending, (state, action)=>{
+                    state.isLoading = true;
+                    state.message = "Knocking the door...";
+                })
+                .addCase(updateProfilePicture.rejected, (state, action)=>{
+                    state.isLoading = false;
+                    state.isError = false;
+                    state.message = "Something broken"
+                })
+                .addCase(updateProfilePicture.fulfilled, (state, action)=>{
+                    state.isLoading = false;
+                    state.isSuccess = true;
+                    state.isError = false;
+                    state.message = "Update ProfilePicture";
+                })
+                .addCase(updateProfileData.pending, (state, action)=>{
+                    state.isLoading = true;
+                    state.message = "Knocking the door...";
+                })
+                .addCase(updateProfileData.rejected, (state, action)=>{
+                    state.isLoading = false;
+                    state.isError = false;
+                    state.message = "Something broken"
+                })
+                .addCase(updateProfileData.fulfilled, (state, action)=>{
+                    state.isLoading = false;
+                    state.isSuccess = true;
+                    state.isError = false;
+                    state.message = "Data Updated";
                 })
         }
 });

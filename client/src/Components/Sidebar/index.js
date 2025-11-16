@@ -18,9 +18,7 @@ export default function Sidebar() {
         router.push(path);
     };
 
-    useEffect(() => {
-        dispatch(getOwnProfile());
-    },[])
+
     return (
             <div className={styles.mainContainer}>
                 <div className={styles.startDiv}>
@@ -36,14 +34,14 @@ export default function Sidebar() {
                     </button>
 
                     <button
-                        className={`${styles.btn} ${currentPath === "/messages" ? styles.activeBtn : ""}`}
+                        className={`${styles.btn} ${currentPath === "/Messages" ? styles.activeBtn : ""}`}
                         onClick={() => handleClick("/Messages")}
                     >
                         <MessageCircle /> Messages
                     </button>
 
                     <button
-                        className={`${styles.btn} ${currentPath === "/discover" ? styles.activeBtn : ""}`}
+                        className={`${styles.btn} ${currentPath === "/Discover" ? styles.activeBtn : ""}`}
                         onClick={() => handleClick("/Discover")}
                     >
                         <Search /> Discover
@@ -67,7 +65,7 @@ export default function Sidebar() {
 
                 <div className={styles.endDiv}>
                     {authState ? (
-                        <p>{authState.getUserName.name}</p>
+                        <p>{authState.ownProfileData.name}</p>
                     ) : (
                         <p>Loading...</p>
                     )}

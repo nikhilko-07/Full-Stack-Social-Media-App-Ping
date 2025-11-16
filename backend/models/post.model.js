@@ -6,7 +6,11 @@ const postSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
     },
-    name:{
+    profile:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref: "Profile",
+    },
+    content:{
         type:String,
         required:true
     },

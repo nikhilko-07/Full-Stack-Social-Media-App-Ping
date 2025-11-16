@@ -6,6 +6,10 @@ const profileSchema = new mongoose.Schema( {
         type:mongoose.Schema.Types.ObjectId,
         ref:"User"
     },
+    name:{
+        type:String,
+        required:true
+    },
     bio:{
         type:String,
         default:"Hey there! I am using Ping",

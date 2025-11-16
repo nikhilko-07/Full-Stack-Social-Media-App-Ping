@@ -12,7 +12,6 @@ export default function Feed(){
     const router = useRouter();
     const dispatch = useDispatch();
     const authState= useSelector((state)=>state.auth);
-    const postState = useSelector((state)=>state.posts);
     const { randPosts, isLoading } =  useSelector((state)=>state.posts);
 
     useEffect(() => {
@@ -35,7 +34,7 @@ export default function Feed(){
                 window.innerHeight + window.scrollY >= document.body.offsetHeight - 10;
 
             if (bottom && !isLoading) {
-                dispatch(getRandomPost());
+                dispatch(getRandomPost(  ));
             }
         };
 

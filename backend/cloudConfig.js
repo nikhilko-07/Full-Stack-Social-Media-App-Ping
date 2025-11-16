@@ -11,7 +11,7 @@ const storage = new CloudinaryStorage({
     cloudinary: cloudinary.v2,
     params:{
         folder:"ping",
-        allowed_formats:["png","jpg","jpeg","png","gif","webp", "mp4"],
+        allowed_formats:["png","jpg","jpeg","gif","webp", "mp4"],
     },
 });
 
