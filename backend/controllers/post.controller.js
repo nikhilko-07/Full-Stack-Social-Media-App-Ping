@@ -301,10 +301,9 @@ export const getPostInfo = async (req, res) => {
   }
 }
 
-export const getSavedPostInfo = async (req, res) => {
+export const getOwnPostInfo = async (req, res) => {
   try {
     const {post_id} = req.query;
-    const user = req.user._id;
     const post = await Post.findOne({_id: post_id});
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
@@ -313,5 +312,19 @@ export const getSavedPostInfo = async (req, res) => {
   }catch (err) {
     console.error(err);
     return res.status(400).json({ message: "Something went wrong in getSavedPostInfo" });
+  }
+}
+
+export const getSavedPostInfo = async (req, res)=>{
+  try {
+    const {post_id} = req.query;
+    const post = await Post.findOne({_id: post_id});
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    return res.status(200).send({post});
+  }catch (err){
+    console.error(err);
+    return res.status(400).json({ message: "Post not found" });
   }
 }

@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import style from "./style.module.css";
 import { searchUser } from "@/config/redux/action/userAction";
 import { Post } from "@/Components/Post";
+import {router} from "next/client";
 
 export default function Discover() {
   const dispatch = useDispatch();
@@ -42,7 +43,7 @@ export default function Discover() {
     }, 400);
     return () => clearTimeout(delayDebounce);
   }, [query, dispatch]);
-
+  console.log(searchResult);
   return (
     <ClientLayout>
       <div className={style.wrapperDiv}>
@@ -58,7 +59,7 @@ export default function Discover() {
               <p></p>
             ) : searchResult.length > 0 ? (
               searchResult.map((user) => (
-                <div className={style.usersFetch} key={user._id}>
+                <div style={{cursor:"pointer"}} onClick={()=> {router.push(`UserProfile/${user._id}`)}} className={style.usersFetch} key={user._id}>
                   <img
                     src={user.profilePicture}
                     alt={user.username}

@@ -1,4 +1,15 @@
-    import {deletePost, getRandomPost, incrementLikes, getRandMedia, getComments, createComment, deleteComment, savedPost, getPostInfo} from "@/config/redux/action/postAction";
+    import {
+    deletePost,
+    getRandomPost,
+    incrementLikes,
+    getRandMedia,
+    getComments,
+    createComment,
+    deleteComment,
+    savedPost,
+    getPostInfo,
+        getSavedPostInfo
+    } from "@/config/redux/action/postAction";
     import {createSlice} from "@reduxjs/toolkit";
 
 
@@ -14,7 +25,8 @@
         mediaFetched:false,
         comments:[],
         commentsFetched:false,
-        postData:[]
+        postData:[],
+        savedPostData:[],
     }
 
     const postSlice = createSlice({
@@ -164,6 +176,25 @@
                     state.isLoading = false;
                     state.message = "Fetched Post Data";
                     state.postData = action.payload;
+                })
+                .addCase(getSavedPostInfo.pending, (state, action) => {
+                    state.isError = false;
+                    state.isLoading = true;
+                    state.message = "Knocking the door..."
+                })
+                .addCase(getSavedPostInfo.rejected, (state, action) => {
+                    state.isLoading = false;
+                    state.isError = true;
+                    state.message = "Something went wrong..."
+                })
+                .addCase(getSavedPostInfo.fulfilled, (state, action) => {
+                    state.isError = false;
+                    state.isLoading = false;
+                    state.message = "Fetched Post Data";
+                    state.savedPostData = [
+                        ...state.savedPostData.filter(p => p._id !== action.payload._id),
+                        action.payload
+                    ];
                 })
         }
     })

@@ -1,7 +1,7 @@
 import {Router} from 'express';
 import {
     getOwnProfile,
-    getPing,
+    getPing, getUserProfile,
     loginUser,
     profileFetched,
     registerUser,
@@ -23,4 +23,5 @@ router.route("/getOwnProfile").get(verifyUser, getOwnProfile);
 router.route("/searchUser").get(verifyUser, searchUser);
 router.route("/updateProfilePicture").post(verifyUser,upload.single("profilePicture"), updateProfilePicture);
 router.route("/updateProfileData").post(verifyUser, updateProfileData);
+router.route("/getUserProfile").get(getUserProfile);
 export default router;

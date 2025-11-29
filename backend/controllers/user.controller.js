@@ -141,8 +141,6 @@ export const updateProfileData = async (req, res) => {
         if (!profile) {
             return res.status(404).json({ message: "Profile not found" });
         }
-
-        // ❗ Username already taken?
         if (name) {
             const existingUser = await Profile.findOne({ name });
 
@@ -175,3 +173,20 @@ export const updateProfileData = async (req, res) => {
         });
     }
 };
+
+export const getUserProfile = async (req, res)=>{
+    try {
+        const {userId} = req.body;
+        if (!userId) {
+            return res.status(400).json({message: "User not found"});
+        }
+        const user = await Profile.findOne({userId: userId}).select("-savedPosts -_id");
+        if (!user) {
+            return res.status(404).json({message: "Profile not found"});
+        }
+        return res.status(200).json(user);
+    }catch(err){
+        return res.status(400).json({"something went wrong":err});
+    }
+}
+

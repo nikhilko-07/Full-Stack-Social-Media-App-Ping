@@ -34,7 +34,6 @@
   display: grid;
   place-items: start;
   height: 10vh;
-  
 }
 .queryContainer input {
   width: 100%;

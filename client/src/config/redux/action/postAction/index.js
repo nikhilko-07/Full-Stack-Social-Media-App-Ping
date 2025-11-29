@@ -190,7 +190,7 @@ export const getPostInfo = createAsyncThunk(
       const token = raw ? raw.replace(/['"]+/g, ""): null;
       if(!token) return thunkAPI.rejectWithValue("Token not provided...");
       const response = await clientServer.get(
-        "/getSavePostInfo",{
+        "/getOwnPostInfo",{
           headers:{Authorization: `Bearer ${token}`},
           params:{post_id: id}
         }
@@ -201,4 +201,23 @@ export const getPostInfo = createAsyncThunk(
       return thunkAPI.rejectWithValue(err.message);
     }
   }
+)
+export const getSavedPostInfo = createAsyncThunk(
+    "user/getSavedPostInfo",
+    async (data, thunkAPI)=>{
+        try {
+            const raw = localStorage.getItem("token");
+            const token = raw ? raw.replace(/['"]+/g, "") : null;
+            if(!token) return thunkAPI.rejectWithValue("Token not provided...");
+            console.log(token)
+            const response = await clientServer.get("/getSavedPostInfo", {
+                headers: { Authorization: `Bearer ${token}` },
+                params: { post_id: data }
+            });
+            return thunkAPI.fulfillWithValue(response.data);
+        }catch(err){
+            console.error("Fetch Comments", err);
+            return thunkAPI.rejectWithValue(err.message);
+        }
+    }
 )

@@ -1,15 +1,17 @@
 import ClientLayout from "@/Layout/ClientLayout";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {getOwnProfile, profileFetch, updateProfileData, updateProfilePicture} from "@/config/redux/action/userAction";
+import {getOwnProfile, updateProfileData, updateProfilePicture} from "@/config/redux/action/userAction";
 import style from "./style.module.css";
 import JoinedDays from "@/Components/JoinedDate";
-import { Calendar, MapPin, Pointer } from "lucide-react";
+import { Calendar, MapPin } from "lucide-react";
 import { Post } from "@/Components/Post";
-import { getPostInfo } from "@/config/redux/action/postAction";
+import {getPostInfo, getSavedPostInfo} from "@/config/redux/action/postAction";
 
 export default function Profile() {
   const userState = useSelector((state) => state.auth);
+  const postState = useSelector((state) => state.posts);
+  const { savedPostData } = postState;
   const dispatch = useDispatch();
 
   const [window, setWindow] = useState(false);
@@ -34,6 +36,14 @@ export default function Profile() {
     setBio("");
     setLocation("");
   };
+  useEffect(() => {
+    if (!ownSavedPosts) return;
+    if (Array.isArray(ownSavedPosts)) {
+      ownSavedPosts.forEach(id => dispatch(getSavedPostInfo(id)));
+    }
+  }, [ownSavedPosts]);
+
+  console.log(ownSavedPosts)
   return (
     <ClientLayout>
       <div className={style.mainContainer}>
@@ -129,7 +139,38 @@ export default function Profile() {
             ) : (
               <p>No Posts Yet.</p>
             )}
-          </div>) : (<div>{ownSavedPosts.length > 0 ? (console.log(ownSavedPosts.map(p => dispatch(getPostInfo(p))))) : (<p>No Saved Posts Yet.</p>)}</div>)}
+          </div>) : (<div className={style.postContainer}>
+
+            {/*{savedPostData.map((post) => (*/}
+            {/*    post.images?.length > 0 && (*/}
+            {/*        <img*/}
+            {/*            onClick={() => {*/}
+            {/*              setData(post);*/}
+            {/*              setWindow(true);*/}
+            {/*            }}*/}
+            {/*            className={style.postsImage}*/}
+            {/*            key={post._id}*/}
+            {/*            src={post.images[0].path}*/}
+            {/*            alt="saved post"*/}
+            {/*        />*/}
+            {/*    )*/}
+            {/*))}*/}
+            {savedPostData.map((post, i) => (
+                <div key={i} style={{ borderBottom: "1px solid #ddd", padding: 10 }}>
+                  <h1>{post.content}</h1>
+                  {/*<img*/}
+                  {/*            onClick={() => {*/}
+                  {/*              setData(post);*/}
+                  {/*              setWindow(true);*/}
+                  {/*            }}*/}
+                  {/*            className={style.postsImage}*/}
+                  {/*            key={post._id}*/}
+                  {/*            src={post.images[0].path}*/}
+                  {/*            alt="saved post"*/}
+                  {/*        />*/}
+                </div>
+            ))}
+          </div>)}
           {window && (
             <div className={style.overlay}>
               <div className={style.modal}>

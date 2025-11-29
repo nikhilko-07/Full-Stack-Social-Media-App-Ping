@@ -1,7 +1,7 @@
 import express from 'express';
 import {
     createPost,
-    deletePost,
+    deletePost, getOwnPostInfo,
     getPost,
     getPostInfo,
     getRand,
@@ -28,6 +28,7 @@ router.route("/createComment").post(verifyUser, createComment);
 router.route("/deleteComment").delete(verifyUser,deleteComment);
 router.route("/savePost").post(verifyUser, savedPost);
 router.route("/postInfo").get(verifyUser, getPostInfo);
-router.route("/getSavePostInfo").get(verifyUser, getSavedPostInfo);
+router.route("/getOwnPostInfo").get(verifyUser, getOwnPostInfo);
+router.route("/getSavedPostInfo").get(verifyUser,getSavedPostInfo);
 
 export default router;
