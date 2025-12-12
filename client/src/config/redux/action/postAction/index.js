@@ -1,6 +1,29 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { clientServer } from "@/config";
 
+export const createAPost= createAsyncThunk(
+    "user/createPost",
+    async (data, thunkAPI) => {
+        try {
+            const raw = localStorage.getItem("token");
+            const token = raw ? raw.replace(/['"]+/g,""): null;
+            const formData = new FormData();
+            if (data.files && data.files.length) {
+                for (let i = 0; i < data.files.length; i++) {
+                    formData.append("files", data.files[i]); // name must match upload.array("files")
+                }
+            }
+            formData.append("content", data.content);
+            const response = await clientServer.post("/createPost",formData,{
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            return thunkAPI.fulfillWithValue(response.data);
+        }catch(err) {
+            return thunkAPI.rejectWithValue(err);
+        }
+    }
+)
+
 export const getRandomPost = createAsyncThunk(
   "user/getRandomPost",
   async (_, thunkAPI) => {

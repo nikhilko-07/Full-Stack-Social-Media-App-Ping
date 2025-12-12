@@ -1,17 +1,25 @@
 import ClientLayout from "@/Layout/ClientLayout";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {getOwnProfile, updateProfileData, updateProfilePicture} from "@/config/redux/action/userAction";
+import {
+  getFollowersList, getFollowingList,
+  getOwnProfile,
+  updateProfileData,
+  updateProfilePicture
+} from "@/config/redux/action/userAction";
 import style from "./style.module.css";
 import JoinedDays from "@/Components/JoinedDate";
 import { Calendar, MapPin } from "lucide-react";
 import { Post } from "@/Components/Post";
 import {getPostInfo} from "@/config/redux/action/postAction";
+import {router} from "next/client";
 
 export default function Profile() {
   const userState = useSelector((state) => state.auth);
   const postState = useSelector((state) => state.posts);
   const { savedPostData } = postState;
+  const {getUserProfileData, getFollowerListData, getFollowingListData} = userState;
+
   const dispatch = useDispatch();
 
   const [window, setWindow] = useState(false);
@@ -22,6 +30,9 @@ export default function Profile() {
   const followersCount = ownProfileData?.followers?.length || 0;
   const followingCount = ownProfileData?.following?.length || 0;
   const postCount = ownProfileData?.ownPosts?.length || 0;
+  const [followWindow, setFollowWindow] = React.useState(false);
+  const [followingWindow, setFollowingWindow] = React.useState(false);
+  const [followersWindow, setFollowersWindow] = React.useState(false);
   const { getOwnPosts } = userState || {};
   const [name, setUsername] = useState("");
   const [bio, setBio] = useState("");
@@ -76,8 +87,16 @@ export default function Profile() {
 
                   <div>
                     <span>{postCount} posts</span>
-                    <span>&nbsp;&nbsp;{followersCount} followers</span>
-                    <span>&nbsp;&nbsp;{followingCount} following</span>
+                    <span style={{cursor:"pointer"}}  onClick={()=>{
+                      setFollowWindow(true)
+                      setFollowersWindow(true)
+                      dispatch(getFollowersList(ownProfileData?._id))
+                    }}>&nbsp;&nbsp;{followersCount} followers</span>
+                    <span style={{cursor:"pointer"}} onClick={()=> {
+                      setFollowWindow(true)
+                      setFollowingWindow(true)
+                      dispatch(getFollowingList(ownProfileData?._id))
+                    }}>&nbsp;&nbsp;{followingCount} following</span>
                   </div>
 
                   <div>
@@ -186,7 +205,81 @@ export default function Profile() {
                 <button onClick={()=>{updateData()}}>Update</button>
               </div>
             </div>
+
           </div>)}
+          {followWindow && (
+              <div
+                  style={{
+                    position: "fixed",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    zIndex: 999,
+                    width: 300,
+                    height: 300,
+                    background: "white",
+                    borderRadius: 10,
+                    padding: 20,
+                    boxShadow: "0 0 20px rgba(0,0,0,0.2)"
+                  }}
+              >
+                <div style={{ position: "relative" }}>
+                  <div className={style.listheader}>{followersWindow  && followWindow ? <p>Followers</p> : <p>Following</p>}</div>
+                  <button
+                      className={style.listCloseBtn}
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        right: 0
+                      }}
+                      onClick={() => {
+                        setFollowWindow(false)
+                        setFollowingWindow(false)
+                        setFollowersWindow(false)
+                      }}
+                  >
+                    X
+                  </button>
+                  <div className={style.followPersonContainer}>
+                    {followersWindow ? getFollowerListData?.length > 0 ? getFollowerListData?.map((item) => (
+                        <div onClick={() => {
+                          router.push(`/UserProfile/${item?.userId}`)
+                          setFollowWindow(false)
+                          setFollowingWindow(false)
+                          setFollowersWindow(false)
+                          console.log(item.userId)
+                        }} className={style.followersListStyle} key={item.userId}  style={{display: "flex", gap: "10px", marginBottom: "10px", cursor:"pointer"}}>
+                          <img
+                              src={item.profilePicture}
+                              alt={item.name}
+                              width={40}
+                              height={40}
+                              style={{borderRadius: "50%"}}
+                          />
+                          <p>{item.name}</p>
+                        </div>
+                    )) : (<></>) : getFollowingListData?.length > 0 ? getFollowingListData?.map((item) => (
+                        <div onClick={() => {
+                          router.push(`/UserProfile/${item?.userId}`)
+                          setFollowWindow(false)
+                          setFollowingWindow(false)
+                          setFollowersWindow(false)
+                        }}  key={item.userId} style={{display: "flex", gap: "10px", marginBottom: "10px", cursor:"pointer"}}>
+                          <img
+                              src={item.profilePicture}
+                              alt={item.name}
+                              width={40}
+                              height={40}
+                              style={{borderRadius: "50%"}}
+                          />
+                          <p>{item.name}</p>
+                        </div>
+                    )) : (<></>)  }
+                  </div>
+
+                </div>
+              </div>
+          )}
         </div>
       </div>
     </ClientLayout>

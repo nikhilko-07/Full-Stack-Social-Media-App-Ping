@@ -167,3 +167,55 @@ export const getUserProfileAction = createAsyncThunk(
         return response.data;
     }
 );
+
+export const FollowMethodAction = createAsyncThunk(
+    "user/updateFollowMethod",
+    async (followingid, thunkAPI) => {
+        try {
+            const raw = localStorage.getItem("token");
+            const token = raw ? raw.replace(/['"]+/g, "") : null;
+            if (!token) return thunkAPI.rejectWithValue("Token not found");
+            const response = await clientServer.post("/updateFollowMethod", {followingid} ,
+                {headers: {Authorization: `Bearer ${token}`}}
+                )
+            return thunkAPI.fulfillWithValue(response.data);
+        }catch (error) {
+            return thunkAPI.rejectWithValue("Something went wrong at FollowMethod Action")
+        }
+    }
+)
+
+export const getFollowersList = createAsyncThunk(
+    "user/FollowersList",
+    async (user, thunkAPI) => {
+        try {
+            const raw = localStorage.getItem("token");
+            const token = raw ? raw.replace(/['"]+/g, "") : null;
+            if (!token) return thunkAPI.rejectWithValue("Token not found");
+            const response = await clientServer.get("/FollowersList", {
+                params: {_id: user},
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            return thunkAPI.fulfillWithValue(response.data);
+        }catch (error) {
+            return thunkAPI.rejectWithValue("Something went wrong at getFollowersList");
+        }
+    }
+)
+export const getFollowingList = createAsyncThunk(
+    "user/followersList",
+    async (user, thunkAPI) => {
+        try {
+            const raw = localStorage.getItem("token");
+            const token = raw ? raw.replace(/['"]+/g, "") : null;
+            if (!token) return thunkAPI.rejectWithValue("Token not found");
+            const response = await clientServer.get("/FollowingList", {
+                params: {_id: user},
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            return thunkAPI.fulfillWithValue(response.data);
+        }catch (error) {
+            return thunkAPI.rejectWithValue("Something went wrong at getFollowersList");
+        }
+    }
+)

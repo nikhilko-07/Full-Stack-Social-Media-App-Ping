@@ -35,7 +35,11 @@
   margin-right: 1%;
 }
 .likeBtn{
-    color: red;
+  color: red;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   transition: 0.3s ease-out, 0.3s ease-out;
 }
 .likeBtn:hover {

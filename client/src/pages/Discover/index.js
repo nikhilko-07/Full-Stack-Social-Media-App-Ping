@@ -59,7 +59,8 @@ export default function Discover() {
               <p></p>
             ) : searchResult.length > 0 ? (
               searchResult.map((user) => (
-                <div style={{cursor:"pointer"}} onClick={()=> {router.push(`UserProfile/${user._id}`)}} className={style.usersFetch} key={user._id}>
+                <div style={{cursor:"pointer"}} onClick={()=> {router.push(`UserProfile/${user.userId}`)}} className={style.usersFetch} key={user._id}>
+                  {console.log(user.userId)}
                   <img
                     src={user.profilePicture}
                     alt={user.username}

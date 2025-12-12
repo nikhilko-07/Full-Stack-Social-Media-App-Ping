@@ -1,10 +1,12 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {
+    FollowMethodAction, getFollowersList,
     getOwnProfile, getUserProfileAction,
     loginUser,
     profileFetch,
     searchUser, updateProfileData,
-    updateProfilePicture
+    updateProfilePicture,
+    getFollowingList
 } from "@/config/redux/action/userAction";
 
 
@@ -24,7 +26,9 @@ const initialState={
     searchResult:[],
     searchLoading: false,
     ownSavedPosts:{},
-    getUserProfileData:null
+    getUserProfileData:null,
+    getFollowerListData:{},
+    getFollowingListData:{},
 }
 const authSlice = createSlice({
     name:"user",
@@ -147,6 +151,52 @@ const authSlice = createSlice({
                     state.message = "Data Updated";
                     state.getUserProfileData = action.payload.user;
                 })
+                .addCase(FollowMethodAction.pending, (state, action)=>{
+                    state.isLoading = true;
+                    state.message = "Knocking the door...";
+                })
+                .addCase(FollowMethodAction.rejected, (state, action)=>{
+                    state.isLoading = false;
+                    state.isError = false;
+                    state.message = "Something broken"
+                })
+                .addCase(FollowMethodAction.fulfilled, (state, action)=>{
+                    state.isLoading = false;
+                    state.isSuccess = true;
+                    state.isError = false;
+                    state.message = "Data Updated";
+                })
+                .addCase(getFollowersList.pending, (state, action)=>{
+                    state.isLoading = true;
+                    state.message = "Knocking the door...";
+                })
+                .addCase(getFollowersList.rejected, (state, action)=>{
+                    state.isLoading = false;
+                    state.isError = false;
+                    state.message = "Something broken"
+                })
+                .addCase(getFollowersList.fulfilled, (state, action)=>{
+                    state.isLoading = false;
+                    state.isSuccess = true;
+                    state.isError = false;
+                    state.getFollowerListData = action.payload.followers;
+                })
+                .addCase(getFollowingList.pending, (state, action)=>{
+                    state.isLoading = true;
+                    state.message = "Knocking the door...";
+                })
+                .addCase(getFollowingList.rejected, (state, action)=>{
+                    state.isLoading = false;
+                    state.isError = false;
+                    state.message = "Something broken"
+                })
+                .addCase(getFollowingList.fulfilled, (state, action)=>{
+                    state.isLoading = false;
+                    state.isSuccess = true;
+                    state.isError = false;
+                    state.getFollowingListData = action.payload.following;
+                })
+
         }
 });
 

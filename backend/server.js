@@ -3,6 +3,7 @@ const app = express();
 import mongoose from "mongoose";
 import userRoutes from "./routes/user.routes.js";
 import postRoutes from "./routes/posts.routes.js"
+import storyRoutes from "./routes/story.routes.js";
 import cors from "cors";
 
 app.use(express.json());
@@ -12,6 +13,7 @@ app.use(cors());
 
 app.use(userRoutes);
 app.use(postRoutes);
+app.use(storyRoutes);
 
 
 const PORT = process.env.PORT || 3000;

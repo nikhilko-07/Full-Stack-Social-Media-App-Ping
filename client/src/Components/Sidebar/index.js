@@ -5,7 +5,6 @@ import Image from "next/image";
 import styles from "./style.module.css";
 import { useRouter } from "next/router";
 import {useDispatch, useSelector} from "react-redux";
-import {getOwnProfile} from "@/config/redux/action/userAction";
 
 export default function Sidebar() {
     const router = useRouter();
@@ -17,10 +16,34 @@ export default function Sidebar() {
     const handleClick = (path) => {
         router.push(path);
     };
+    const [createPostWindow, setCreatePostWindow] = React.useState(false);
+    const [content, setContent] = React.useState("");
+    const [files, setFiles] = React.useState([]);
+
+    const handleFilesChange = (e) => {
+        const selected = Array.from(e.target.files || []);
+        setFiles(selected);
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        if (!content.trim()) {
+            alert("Content is required");
+            return;
+        }
+        if (!files.length) {
+            alert("Please select at least one image");
+            return;
+        }
+
+        dispatch(createAPost({ content, files }));
+    };
 
 
     return (
             <div className={styles.mainContainer}>
+
                 <div className={styles.startDiv}>
                     <Image className={styles.logo} src={logo} alt="logo" />
                 </div>
@@ -57,11 +80,12 @@ export default function Sidebar() {
                     <button
                         style={{ color: "white" }}
                         className={`${styles.btn} ${styles.createPost}`}
-                        onClick={() => handleClick("/create-post")}
+                        onClick={() => handleClick("/createPost")}
                     >
                         <CirclePlus /> Create Post
                     </button>
                 </div>
+
 
                 <div className={styles.endDiv}>
                     {authState ? (
@@ -76,6 +100,8 @@ export default function Sidebar() {
                         <LogOut />
                     </button>
                 </div>
+
+
             </div>
 
     );

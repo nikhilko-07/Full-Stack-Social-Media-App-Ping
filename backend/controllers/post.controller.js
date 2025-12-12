@@ -41,7 +41,7 @@ export const createPost = async (req, res) => {
     console.error(err);
     res.status(500).json({ message: "Something went wrong..." });
   }
-};
+}
 
 export const getPost = async (req, res) => {
   try {

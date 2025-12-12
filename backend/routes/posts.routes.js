@@ -17,7 +17,7 @@ import { createComment, deleteComment, getComments } from '../controllers/commen
 
 const upload = multer({ storage });
 
-router.post("/createPost", verifyUser, upload.array("images", 10), createPost);
+router.post("/createPost", verifyUser, upload.array("files", 10), createPost);
 router.route("/getPost").get(getPost);
 router.route("/getRand").post(verifyUser, getRand);
 router.route("/getRandMedia").post(verifyUser, getRandMedia);

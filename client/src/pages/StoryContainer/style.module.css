@@ -1,0 +1,406 @@
+.addStory {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    width: 100px;
+    height: 150px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.addStory img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: all 0.4s ease-in-out;
+}
+
+.addStoryOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.addStory:hover img {
+    filter: blur(3px) brightness(0.7);
+    transform: scale(1.1);
+}
+
+.addStory::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60px;
+    height: 60px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: all 0.3s ease-in-out;
+    z-index: 1;
+}
+
+.addStory::after {
+    content: '+';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.8rem;
+    font-weight: 300;
+    color: #333;
+    opacity: 0;
+    transition: all 0.3s ease-in-out;
+    z-index: 2;
+}
+
+.addStory:hover::before {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.addStory:hover::after {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* Show overlay on hover for better UX */
+.addStory:hover .addStoryOverlay {
+    opacity: 1;
+}.addStoryContainer {
+     position: fixed;
+     inset: 0;
+     width: 100vw;
+     height: 100vh;
+     background: rgba(15, 23, 42, 0.85); /* slate dark overlay */
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     z-index: 1000;
+     backdrop-filter: blur(4px);
+ }
+
+/* close button wrapper (kept for structure) */
+.modal {
+    position: relative;
+}
+
+/* close button */
+.closeBtn {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    height: 30px;
+    width: 30px;
+    border-radius: 999px;
+    border: none;
+    background-color: #0f172a;
+    color: #9ca3af;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+    cursor: pointer;
+}
+
+.closeBtn:hover {
+    background-color: #ef4444;
+    color: #f9fafb;
+    transform: scale(1.05);
+}
+
+/* card */
+.storyaddbtnContainer {
+    background: #020617;
+    border-radius: 18px;
+    padding: 1.7rem 1.9rem;
+    max-width: 420px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    position: relative;
+    animation: slideIn 0.25s ease-out;
+    border: 1px solid #1f2937;
+}
+
+/* header */
+.addStoryheader {
+    margin: 0 0 1rem 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    text-align: center;
+    color: #e5e7eb;
+}
+
+/* file input */
+.fileInput {
+    display: none;
+}
+
+.fileLabel {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: #9ca3af;
+}
+
+.fileBadge {
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    background-color: #111827;
+    border: 1px solid #374151;
+    font-size: 0.8rem;
+}
+
+/* selected file name */
+.storyFileName {
+    margin: 0.75rem 0 0.5rem 0;
+    font-size: 0.8rem;
+    color: #9ca3af;
+    text-align: left;
+    word-break: break-all;
+}
+
+/* button */
+.uploadStoryBtn {
+    margin-top: 0.75rem;
+    border: none;
+    color: #f9fafb;
+    background: linear-gradient(135deg, #6366f1, #ec4899);
+    height: 36px;
+    display: inline-flex;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    padding: 0 1.4rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    box-shadow: 0 12px 30px rgba(79, 70, 229, 0.5);
+    align-self: flex-end;
+}
+
+.uploadStoryBtn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 16px 40px rgba(79, 70, 229, 0.6);
+}
+
+.uploadStoryBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* entrance animation */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.storiesRow{
+    display: flex;
+    gap: 0.5rem;
+}
+.usersStory {
+    height: 100%;
+    width: 100px;
+
+    display: flex;
+    position: relative;
+    overflow: hidden;
+}
+.usersStory img {
+    border-radius: 12px;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    cursor: pointer;
+    width: 100%;
+}
+
+.storiesWrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* your existing .storiesContainer, just tweak for scroll + hide bar */
+.storiesContainer {
+    display: flex;
+    width: 100%;
+    overflow-x: auto;
+    gap: 1rem;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;  /* IE/Edge */
+    scrollbar-width: none;     /* Firefox */
+    margin-bottom: 2rem;
+}
+.storiesWrapper {
+    position: relative;       /* important for absolute children */
+    display: flex;
+    align-items: center;
+}
+
+/* left button */
+.scrollBtn1 {
+    border: none;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    position: absolute;
+    left: 0;                  /* stick to left edge of wrapper */
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    z-index: 100;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+/* right button */
+.scrollBtn2 {
+    border: none;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    position: absolute;
+    right: 0;                 /* stick to right edge of wrapper */
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    z-index: 100;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.storiesContainer::-webkit-scrollbar {
+    display: none;             /* Chrome/Safari */
+}
+
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.userStoryArray{
+    display: flex;
+    width:  400px;
+    height: 700px;
+}
+.userStoryArray {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 400px;
+    height: 700px;
+    position: relative; /* for absolute buttons */
+}
+.closeStory{
+    border: none;
+    width:  30px;
+    height: 30px;
+    border-radius: 100%;
+    color: red;
+    background: white;
+    margin: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+.closeStory:hover {
+    transform: scale(1.3);
+    color: white;
+    background: red;
+}
+.userStoryImg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 2%;
+}
+.usersStoryContainer{
+    position: fixed;  /* Changed from absolute */
+    top: 0;
+    left: 0;
+    width: 100%;     /* Full viewport width */
+    height: 100%;    /* Full viewport height */
+    background: rgba(0, 0, 0, 0.8);  /* Dark overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.navBtn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+}
+
+.navLeft {
+    left: 8px;
+}
+
+.navRight {
+    right: 8px;
+}
+.fileInput {
+    display: none;
+}
+
+.fileLabel {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: #9ca3af;
+}
+
+.fileBadge {
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    background-color: #111827;
+    border: 1px solid #374151;
+    font-size: 0.8rem;
+}

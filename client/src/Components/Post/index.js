@@ -83,7 +83,7 @@ export const Post = ({ data, closeModal }) => {
                 dispatch(incrementLikes(data._id));
               }}
             >
-              <Heart />
+              <Heart />{data.likes.length}
             </button>
             <button
             className={style.cmtBtn}

@@ -180,7 +180,8 @@ export const getUserProfileController = async (req, res) => {
             return res.status(400).json({ message: "User ID not provided" });
         }
 
-        const user = await Profile.findById(_id).select("-savedPosts");
+        const user = await Profile.findOne({userId: _id}).select("-savedPosts");
+
         if (!user) {
             return res.status(404).json({ message: "Profile not found" });
         }
@@ -188,5 +189,110 @@ export const getUserProfileController = async (req, res) => {
         res.status(200).json({user });
     } catch (err) {
         res.status(500).json({ message: err.message });
+    }
+};
+export const followUnfollowController = async (req, res) => {
+    try {
+        const own_id = req.user._id;    // logged in user
+        const { followingid } = req.body;  // target userId (not profile id)
+
+        if (followingid.toString() === own_id.toString()) {
+            return res.status(400).json({ message: "You can't follow yourself" });
+        }
+
+        // find profiles by userId
+        const OwnProfile = await Profile.findOne({ userId: own_id });
+        const FollowingProfile = await Profile.findOne({ userId: followingid });
+
+        if (!FollowingProfile) {
+            return res.status(404).json({ message: "Target profile not found" });
+        }
+
+        const isAlreadyFollowing =
+            FollowingProfile.followers.includes(OwnProfile._id);
+
+        // -------------------------
+        //        UNFOLLOW
+        // -------------------------
+        if (isAlreadyFollowing) {
+            await Profile.findByIdAndUpdate(
+                OwnProfile._id,
+                { $pull: { following: FollowingProfile._id } }
+            );
+
+            await Profile.findByIdAndUpdate(
+                FollowingProfile._id,
+                { $pull: { followers: OwnProfile._id } }
+            );
+
+            return res.status(200).json({ message: "User successfully unfollowed" });
+        }
+
+        // -------------------------
+        //        FOLLOW
+        // -------------------------
+        await Profile.findByIdAndUpdate(
+            OwnProfile._id,
+            { $addToSet: { following: FollowingProfile._id } }
+        );
+
+        await Profile.findByIdAndUpdate(
+            FollowingProfile._id,
+            { $addToSet: { followers: OwnProfile._id } }
+        );
+
+        return res.status(200).json({ message: "User successfully followed" });
+
+    } catch (err) {
+        return res.status(500).json({ message: "Something went wrong", error: err });
+    }
+};
+
+export const getFollowingList = async (req, res) => {
+    try {
+        const { _id } = req.query;
+
+        if (!_id) {
+            return res.status(404).json({ message: "User ID not provided" });
+        }
+
+        const profile = await Profile.findById(_id)
+            .select("following")
+            .populate({
+                path: "following",
+                select: "name profilePicture bio userId -_id"  // fields to return
+            });
+
+        if (!profile) {
+            return res.status(404).json({ message: "Profile not found" });
+        }
+
+        return res.status(200).json(profile);
+    } catch (err) {
+        return res.status(400).json({ message: "Something went wrong", error: err });
+    }
+};
+export const getFollowerList = async (req, res) => {
+    try {
+        const { _id } = req.query;
+
+        if (!_id) {
+            return res.status(404).json({ message: "User ID not provided" });
+        }
+
+        const profile = await Profile.findById(_id)
+            .select("followers")
+            .populate({
+                path: "followers",
+                select: "name profilePicture bio userId -_id"  // fields to return
+            });
+
+        if (!profile) {
+            return res.status(404).json({ message: "Profile not found" });
+        }
+
+        return res.status(200).json(profile);
+    } catch (err) {
+        return res.status(400).json({ message: "Something went wrong", error: err });
     }
 };

@@ -6,6 +6,7 @@ import ClientLayout from "@/Layout/ClientLayout";
 import style from "./style.module.css";
 import {getRandomPost} from "@/config/redux/action/postAction";
 import {PostContainer} from "@/pages/postContainer";
+import {StoryContainer} from "@/pages/StoryContainer";
 
 export default function Feed(){
 
@@ -48,7 +49,7 @@ export default function Feed(){
      <div className={style.mainContainer}>
          <div className={style.wrapperDiv}>
              <div className={style.storiesContainer}>
-                 its a stories container
+                <StoryContainer/>
              </div>
              <div className={style.postContainer}>
                  <PostContainer data={randPosts} />

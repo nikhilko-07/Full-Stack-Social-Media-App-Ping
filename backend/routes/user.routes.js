@@ -1,5 +1,6 @@
 import {Router} from 'express';
 import {
+    followUnfollowController, getFollowerList, getFollowingList,
     getOwnProfile,
     getPing, getUserProfileController,
     loginUser,
@@ -24,4 +25,8 @@ router.route("/searchUser").get(verifyUser, searchUser);
 router.route("/updateProfilePicture").post(verifyUser,upload.single("profilePicture"), updateProfilePicture);
 router.route("/updateProfileData").post(verifyUser, updateProfileData);
 router.route("/getUserProfile").get(verifyUser, getUserProfileController);
+router.route("/updateFollowMethod").post(verifyUser, followUnfollowController);
+router.route("/FollowingList").get(getFollowingList);
+router.route("/FollowersList").get(getFollowerList);
+
 export default router;
