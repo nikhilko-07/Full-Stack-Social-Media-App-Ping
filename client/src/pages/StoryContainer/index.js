@@ -134,7 +134,7 @@ export const StoryContainer = () => {
                             </label>
                             {filedata && <p className={style.storyFileName}>Selected: {filedata.name}</p>}
                             <button  className={style.uploadStoryBtn} onClick={handleUpload} disabled={!filedata}>
-                                {filedata ? "Upload Story" : "Choose Image"}
+                                {filedata ? "Upload Story" : "X"}
                             </button>
                         </div>
                     </div>
