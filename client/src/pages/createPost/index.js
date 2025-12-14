@@ -15,7 +15,7 @@ export default function createPost(){
         setFiles(selected);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async(e) =>  {
         e.preventDefault();
 
         if (!content.trim()) {
@@ -26,8 +26,9 @@ export default function createPost(){
             alert("Please select at least one image");
             return;
         }
-
-        dispatch(createAPost({ content, files }));
+        await dispatch(createAPost({ content, files }));
+        await setContent("");
+        await setFiles([]);
     };
 
     return(<ClientLayout>

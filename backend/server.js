@@ -5,6 +5,8 @@ import userRoutes from "./routes/user.routes.js";
 import postRoutes from "./routes/posts.routes.js"
 import storyRoutes from "./routes/story.routes.js";
 import cors from "cors";
+import dotenv from "dotenv";
+dotenv.config();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -16,11 +18,11 @@ app.use(postRoutes);
 app.use(storyRoutes);
 
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 9000;
 
 const db = async ()=>{
     try {
-        await mongoose.connect("mongodb+srv://nikhil:nikhil@ourdb.dykydkn.mongodb.net/?retryWrites=true&w=majority&appName=ourDB");
+        await mongoose.connect(process.env.MONGO_URI);
         console.log("Database Connected");
     }catch (err){
         console.log(err);
