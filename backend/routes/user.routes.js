@@ -6,6 +6,7 @@ import {
     loginUser,
     profileFetched,
     registerUser,
+    getAllUser,
     searchUser, updateProfileData,
     updateProfilePicture
 } from "../controllers/user.controller.js";
@@ -26,7 +27,8 @@ router.route("/updateProfilePicture").post(verifyUser,upload.single("profilePict
 router.route("/updateProfileData").post(verifyUser, updateProfileData);
 router.route("/getUserProfile").get(verifyUser, getUserProfileController);
 router.route("/updateFollowMethod").post(verifyUser, followUnfollowController);
-router.route("/FollowingList").get(getFollowingList);
-router.route("/FollowersList").get(getFollowerList);
+router.route("/FollowingList").get(verifyUser,getFollowingList);
+router.route("/FollowersList").get(verifyUser, getFollowerList);
+router.route("/getAllTheUsers").get(verifyUser, getAllUser);
 
 export default router;

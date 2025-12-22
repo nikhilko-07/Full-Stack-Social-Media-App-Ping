@@ -1,0 +1,13 @@
+.messageContainer{
+    border: 1px solid red;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    display: grid;
+}
+.userList{
+    width: 400px;
+    border: 1px solid blue;
+    height: 50px;
+}
