@@ -1,6 +1,5 @@
 import http from 'http';
 import express from 'express';
-import {Server}from "socket.io"
 const app = express();
 import mongoose from "mongoose";
 import userRoutes from "./routes/user.routes.js";
@@ -23,43 +22,15 @@ app.use(storyRoutes);
 const PORT = process.env.PORT || 9000;
 const server = http.createServer(app);
 
-const io = new Server(server, {
-    cors: {
-        origin: "http://localhost:3001", // frontend url
-        methods: ["GET", "POST"],
-    },
-});
 
 const db = async ()=>{
     try {
-        await mongoose.connect(process.env.MONOG_URI);
+        await mongoose.connect("mongodb+srv://nikhil:nikhil@ourdb.dykydkn.mongodb.net/?appName=ourDB");
         console.log("Database Connected");
     }catch (err){
         console.log(err);
     }
 }
-
-io.on("connection", (socket) => {
-    console.log("Client connected");
-
-    //join room using userId
-    socket.on("join", (userId)=>{
-        socket.join(userId);
-        console.log(`Joined user ID: ${userId}`);
-    })
-
-    //send message
-    socket.on("sendMessage",(message, recieverId, senderId)=>{
-        io.to(message.receiver).emit("receiveMessage",message);
-        console.log(message, recieverId, senderId);
-    });
-
-    //disconnect
-    socket.on("disconnect",()=>{
-        console.log("Disconnected");
-    })
-})
-
 
 
 server.listen(PORT, () => {
