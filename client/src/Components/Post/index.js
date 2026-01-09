@@ -60,7 +60,7 @@ export const Post = ({ data, closeModal }) => {
   </button>
 )}
        </div>
-        <div style={{ width: "400px" }}>
+        <div style={{ width: "100%" , display:"grid", alignContent:"center",justifyContent:"center"}}>
           <Carousel>
             {data.images.map((img, i) => (
               <img
