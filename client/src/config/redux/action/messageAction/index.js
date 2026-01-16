@@ -6,7 +6,6 @@ export const getAllMessage = createAsyncThunk(
     "user/getAllMessage",
     async(chatId, thunkAPI)=>{
         try{
-            console.log(chatId)
             const raw = localStorage.getItem("token");
             const token = raw ? raw.replace(/['"]+/g, ""): null;
 

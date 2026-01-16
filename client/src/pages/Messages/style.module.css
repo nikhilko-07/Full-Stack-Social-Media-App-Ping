@@ -84,5 +84,99 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
+  object-fit: cover;
+}
+.chatInput {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  border-top: 2px solid #ddd;
+  padding: 0.5rem;
+  box-sizing: border-box;
+
+  margin-top: auto;   /* ⬅️ THIS STICKS IT TO BOTTOM */
+}
+.messageContainer {
+  flex: 1;      
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.selectedUserTag {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 95%;
+  background-color: white;
+  margin: 1rem;
+  padding: 5px;
+  border-radius: 5px;
 }
 
+.selectedUserTag img {
+  width:  50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.chatsContainer{
+  overflow-y: scroll;
+  height: 80vh;
+}
+.chatsContainer::-webkit-scrollbar{
+  display: none;
+}
+.messageThread {
+  display: inline-block;          /* ⬅️ shrink to text */
+  max-width: 70%;                 /* wrap only if text is long */
+  background-color: white;
+  margin: 0.5rem 1rem;
+  gap: 10px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  white-space: pre-wrap;          /* keep text formatting */
+  word-break: break-word;         /* prevent overflow */
+}
+.messageRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+.messageThread img{
+  width:  30px;
+  object-fit: cover;
+  height: 30px;
+  border-radius: 100%;
+  margin-right: 5px;
+}
+
+.messageInputContainer{
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 95%;
+  background-color: white;
+  margin: 1rem;
+  padding: 5px;
+  border-radius: 5px;
+}
+.messageInputContainer input{
+  width: 90%;
+  height: 40px;
+  padding-left: 5px;
+  outline: none;
+  font-family: "Permanent Marker", cursive;
+  border: none;
+  font-size: large;
+}
+.messageInputContainer button{
+  width: 80px;
+  background: linear-gradient(to right, #5E52E0, #9B34FB);
+  height: 40px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  font-family: "Permanent Marker", cursive;
+}
