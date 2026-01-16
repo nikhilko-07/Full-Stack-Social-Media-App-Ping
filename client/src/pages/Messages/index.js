@@ -1,138 +1,175 @@
 import ClientLayout from "@/Layout/ClientLayout";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { searchUser } from "@/config/redux/action/userAction";
+import { getOwnProfile, searchUser } from "@/config/redux/action/userAction";
 import style from "./style.module.css";
-import socket from "@/pages/socket/socket";
+import socket from "../socket/socket";
+import { accessTheChat, fetchTheChats } from "@/config/redux/action/chatAction";
+import {
+  getAllMessage,
+  sendAMessage,
+} from "@/config/redux/action/messageAction";
 
 export default function Messages() {
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-    // ✅ FIX: get token separately
-    const { searchResult, searchLoading, user, token } = useSelector(
-        (state) => state.auth
-    );
+  /* ================= REDUX STATE ================= */
+  const { searchResult, ownProfileData, searchLoading } = useSelector(
+    (state) => state.auth
+  );
+  const { fetchedChats } = useSelector((state) => state.chats);
+  const messages = useSelector((state) => state.message?.messages || []);
 
-    const [query, setQuery] = useState("");
-    const [selectedUser, setSelectedUser] = useState(null);
-    const [messages, setMessages] = useState([]);
-    const [newMessage, setNewMessage] = useState("");
+  const user = ownProfileData?.userId;
 
-    /* =======================
-       🔍 SEARCH USERS
-    ======================== */
-    useEffect(() => {
-        if (!query.trim()) return;
+  /* ================= LOCAL STATE ================= */
+  const [query, setQuery] = useState("");
+  const [newMessage, setNewMessage] = useState("");
+  const [chatId, setChatId] = useState("");
+  const [socketConnected, setSocketConnected] = useState(false);
 
-        const delay = setTimeout(() => {
-            dispatch(searchUser(query));
-        }, 400);
+  /* ================= LOAD PROFILE ================= */
+  useEffect(() => {
+    dispatch(getOwnProfile());
+  }, [dispatch]);
 
-        return () => clearTimeout(delay);
-    }, [query, dispatch]);
+  /* ================= FETCH CHATS ================= */
+  useEffect(() => {
+    dispatch(fetchTheChats());
+  }, [dispatch]);
 
-    /* =======================
-       🔌 JOIN SOCKET (MY ID)
-    ======================== */
-    useEffect(() => {
-        if (user?._id) {
-            socket.emit("join", user._id);
-        }
-    }, [user]);
+  /* ================= SOCKET SETUP ================= */
+  useEffect(() => {
+    if (!user?._id) return;
 
+    socket.emit("setup", user);
 
-    const makeConnection = (name)=>{
-        socket.emit("join", name);
-        console.log("Joined user",name);
-    }
-    const sendMessage = ()=>{
-        socket.emit("sendMessage",newMessage, selectedUser.id )
-    }
+    const onConnect = () => {
+      setSocketConnected(true);
+    };
 
-    return (
-        <ClientLayout>
-            <div className={style.messageWrapper}>
-                {/* ================= LEFT PANEL ================= */}
-                <div className={style.Querywrapper}>
-                    <div className={style.queryContainer}>
-                        <input
-                            type="text"
-                            value={query}
-                            onChange={(e) => setQuery(e.target.value)}
-                            placeholder="Search users..."
-                        />
+    const onMessageReceived = (msg) => {
+      if (msg.chat._id === chatId) {
+        dispatch({
+          type: "ADD_MESSAGE",
+          payload: msg,
+        });
+      }
+    };
+
+    socket.on("connected", onConnect);
+    socket.on("message received", onMessageReceived);
+
+    return () => {
+      socket.off("connected", onConnect);
+      socket.off("message received", onMessageReceived);
+    };
+  }, [user?._id, chatId, dispatch]);
+
+  /* ================= SEND MESSAGE ================= */
+  const sendMessage = async () => {
+    if (!newMessage.trim() || !chatId) return;
+
+    const res = await dispatch(sendAMessage({ content: newMessage, chatId }));
+    socket.emit("new message", res.payload);
+    setNewMessage("");
+  };
+
+  /* ================= SEARCH USER ================= */
+  useEffect(() => {
+    if (!query.trim()) return;
+
+    const delay = setTimeout(() => {
+      dispatch(searchUser(query));
+    }, 400);
+
+    return () => clearTimeout(delay);
+  }, [query, dispatch]);
+
+  /* ================= UI ================= */
+  return (
+    <ClientLayout>
+      <div className={style.messageWrapper}>
+        {/* ================= SIDEBAR ================= */}
+        <div className={style.sidebarUsers}>
+          <div className={style.queryContainer}>
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search User"
+            />
+
+            {query.trim() && (
+              <div className={style.searchResultBox}>
+                {searchLoading ? null : searchResult.length > 0 ? (
+                  searchResult.map((user) => (
+                    <div
+                      key={user._id}
+                      className={style.usersFetch}
+                      onClick={async () => {
+                        await dispatch(accessTheChat(user._id));
+                        dispatch(fetchTheChats());
+                        setQuery(""); // 🔥 close suggestions after click
+                      }}
+                    >
+                      <img src={user.profilePicture} alt={user.name} />
+                      <span>{user.name}</span>
                     </div>
+                  ))
+                ) : (
+                  <p className={style.noUser}>No users found</p>
+                )}
+              </div>
+            )}
+          </div>
 
-                    <div className={style.usersList}>
-                        {searchLoading ? null : searchResult.length > 0 ? (
-                            searchResult.map((u) => (
-                                <div
-                                    key={u._id}
-                                    className={style.users}
-                                    onClick={() =>
-                                        {
-                                            setSelectedUser({
-                                                id: u.userId,
-                                                name: u.name,
-                                                profilePicture: u.profilePicture,
-                                            })
-                                            makeConnection(u.name)
-                                        }
-                                    }
-                                >
-                                    <img width={40} src={u.profilePicture} />
-                                    <p>{u.name}</p>
-                                </div>
-                            ))
-                        ) : (
-                            query && <p>No user found</p>
-                        )}
-                    </div>
-                </div>
+          <div className={style.chatedUsers}>
+            {fetchedChats.map((chat) => (
+              <div
+                key={chat._id}
+                className={style.chatUser}
+                onClick={() => {
+                  setChatId(chat._id);
+                  dispatch(getAllMessage(chat._id));
+                  socket.emit("join chat", chat._id);
+                }}
+              >
+                <img src={chat?.users[1]?.profilePicture} />
+                <span>{chat?.users[1]?.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
 
-                {/* ================= RIGHT CHAT PANEL ================= */}
-                <div className={style.messageContainer}>
-                    {/* HEADER */}
-                    <div className={style.userMessageHeader}>
-                        {selectedUser ? (
-                            <div className={style.userDetails}>
-                                <img src={selectedUser.profilePicture} />
-                                <p>{selectedUser.name}</p>
-                            </div>
-                        ) : (
-                            <p>Please select a user</p>
-                        )}
-                    </div>
+        {/* ================= CHAT ================= */}
+        <div className={style.messageContainer}>
+          <div className={style.chatsContainer}>
+            {messages.map((msg) => (
+              <div
+                key={msg._id}
+                className={
+                  msg.sender._id === user?._id
+                    ? style.myMessage
+                    : style.theirMessage
+                }
+              >
+                {msg.content}
+              </div>
+            ))}
+          </div>
 
-                    {/* CHAT MESSAGES */}
-                    <div className={style.chatsContainer}>
-                        {messages.map((msg) => (
-                            <div
-                                key={msg._id}
-                                className={
-                                    msg.sender._id === user?._id
-                                        ? style.myMessage
-                                        : style.theirMessage
-                                }
-                            >
-                                {msg.content}
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* INPUT */}
-                    {selectedUser && (
-                        <div className={style.chatInput}>
-                            <input
-                                value={newMessage}
-                                onChange={(e) => setNewMessage(e.target.value)}
-                                placeholder="Type a message..."
-                            />
-                            <button onClick={sendMessage}>Send</button>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </ClientLayout>
-    );
+          {/* ================= INPUT ================= */}
+          {chatId && (<div className={style.chatInput}>
+            <input
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Type message..."
+            />
+            <button onClick={sendMessage}>Send</button>
+          </div>)}
+        </div>
+      </div>
+    </ClientLayout>
+  );
 }
