@@ -31,7 +31,9 @@ app.use(messageRoutes);
 // DB connection
 const db = async () => {
   try {
-    await mongoose.connect("mongodb+srv://nikhil:nikhil@ourdb.dykydkn.mongodb.net/?appName=ourDB");
+    await mongoose.connect(
+      "mongodb+srv://nikhil:nikhil@ourdb.dykydkn.mongodb.net/?appName=ourDB",
+    );
     console.log("Database Connected");
   } catch (err) {
     console.log(err);
@@ -45,45 +47,48 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "*", // frontend URL in prod
-    methods: ["GET", "POST"]
-  }
+    methods: ["GET", "POST"],
+  },
 });
 
 // ================= SOCKET.IO LOGIC =================
 
 io.on("connection", (socket) => {
-  console.log("Socket connected:", socket.id);
-
+  // user personal room
   socket.on("setup", (userData) => {
     socket.join(userData._id);
     socket.emit("connected");
   });
 
-  socket.on("join chat", (room) => {
-    socket.join(room);
-    console.log("User joined room:", room);
+  // chat room
+  socket.on("join chat", (chatId) => {
+    socket.join(chatId);
   });
 
-  socket.on("typing", (room) => {
-    socket.in(room).emit("typing");
+  socket.on("typing", (chatId) => {
+    socket.to(chatId).emit("typing");
   });
 
-  socket.on("stop typing", (room) => {
-    socket.in(room).emit("stop typing");
+  socket.on("stop typing", (chatId) => {
+    socket.to(chatId).emit("stop typing");
   });
 
-  socket.on("new message", (newMessageRecieved) => {
-    const chat = newMessageRecieved.chat;
-    if (!chat.users) return console.log("Chat users not found");
+  socket.on("new message", (newMessage) => {
+    const chat = newMessage.chat;
+
+    if (!chat?.users) return;
 
     chat.users.forEach((user) => {
-      if (user._id === newMessageRecieved.sender._id) return;
-      socket.in(user).emit("message received", newMessageRecieved, console.log(newMessageRecieved));
+      if (user._id === newMessage.sender._id) {
+        return
+      };
+      // send to user room
+      socket.to(user._id).emit("message received", newMessage);
     });
   });
 
   socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
+    console.log("Socket disconnected:", socket.id);
   });
 });
 

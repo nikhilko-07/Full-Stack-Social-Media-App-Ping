@@ -36,7 +36,7 @@ export const sendMessage = async (req, res) => {
     });
 
     // ✅ NEW WAY (NO execPopulate)
-    message = await message.populate("sender", "name");
+    message = await message.populate("sender", "name profilePicture");
     message = await message.populate("chat");
     message = await message.populate({
       path: "chat.users",

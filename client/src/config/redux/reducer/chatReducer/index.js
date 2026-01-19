@@ -48,62 +48,6 @@ const chatSlice = createSlice({
                 state.message = "Accessed the chats";
                 state.fetchedChats = action.payload
             })
-            // =========================
-            .addCase(createGroupChat.rejected,(state, action)=>{
-                state.isError = true;
-                state.message = action.payload;
-            })
-             .addCase(createGroupChat.pending,(state, action)=>{
-                state.isError = false;
-                state.message = "Accessing the chat...";
-                state.loading = true;
-            })
-             .addCase(createGroupChat.fulfilled,(state, action)=>{
-                state.isError = false;
-                state.message = state.action;
-            })
-            // =========================
-            .addCase(renameGroup.rejected,(state, action)=>{
-                state.isError = true;
-                state.message = action.payload;
-            })
-             .addCase(renameGroup.pending,(state, action)=>{
-                state.isError = false;
-                state.message = "Accessing the chat...";
-                state.loading = true;
-            })
-             .addCase(renameGroup.fulfilled,(state, action)=>{
-                state.isError = false;
-                state.message = state.action;
-            })
-            // =========================
-            .addCase(removeGroup.rejected,(state, action)=>{
-                state.isError = true;
-                state.message = action.payload;
-            })
-             .addCase(removeGroup.pending,(state, action)=>{
-                state.isError = false;
-                state.message = "Accessing the chat...";
-                state.loading = true;
-            })
-             .addCase(removeGroup.fulfilled,(state, action)=>{
-                state.isError = false;
-                state.message = state.action;
-            })
-            // =========================
-            .addCase(addToTheGroup.rejected,(state, action)=>{
-                state.isError = true;
-                state.message = action.payload;
-            })
-             .addCase(addToTheGroup.pending,(state, action)=>{
-                state.isError = false;
-                state.message = "Accessing the chat...";
-                state.loading = true;
-            })
-             .addCase(addToTheGroup.fulfilled,(state, action)=>{
-                state.isError = false;
-                state.message = state.action;
-            })
     }
 })
 

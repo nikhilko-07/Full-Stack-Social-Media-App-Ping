@@ -4,7 +4,7 @@ import { getAllMessage, sendAMessage } from "../../action/messageAction";
 const initialState = {
   isError: false,
   isLoading: false,
-  message: "",                // ✅ fixed typo
+  message: "",
   messagesfetched: false,
   fetchedMessages: [],
 };
@@ -12,9 +12,18 @@ const initialState = {
 const messageSlice = createSlice({
   name: "Message",
   initialState,
-  reducers: {},
-  extraReducers: (builder) => {      // ✅ FIXED
+
+  // ✅ ADD THIS
+  reducers: {
+    ADD_MESSAGE: (state, action) => {
+      // 🔥 IMMUTABLE UPDATE (UI RE-RENDER)
+      state.fetchedMessages.push(action.payload);
+    },
+  },
+
+  extraReducers: (builder) => {
     builder
+      // ================= GET ALL MESSAGES =================
       .addCase(getAllMessage.pending, (state) => {
         state.isLoading = true;
         state.isError = false;
@@ -25,11 +34,11 @@ const messageSlice = createSlice({
         state.isError = true;
       })
       .addCase(getAllMessage.fulfilled, (state, action) => {
-        state.isLoading = false;      // ✅ FIXED
+        state.isLoading = false;
         state.isError = false;
         state.message = "Fetched the messages";
         state.fetchedMessages = action.payload;
-        state.messagesfetched = true; // ✅ THIS WILL NOW WORK
+        state.messagesfetched = true;
       })
 
       // ================= SEND MESSAGE =================
@@ -43,11 +52,14 @@ const messageSlice = createSlice({
         state.isError = true;
       })
       .addCase(sendAMessage.fulfilled, (state) => {
-        state.isLoading = false;      // ✅ FIXED
+        state.isLoading = false;
         state.isError = false;
         state.message = "Message sent";
       });
   },
 });
+
+// ✅ EXPORT ACTION
+export const { ADD_MESSAGE } = messageSlice.actions;
 
 export default messageSlice.reducer;

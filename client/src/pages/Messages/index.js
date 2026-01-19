@@ -1,9 +1,8 @@
 import ClientLayout from "@/Layout/ClientLayout";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   getOwnProfile,
-  profileFetch,
   searchUser,
 } from "@/config/redux/action/userAction";
 import style from "./style.module.css";
@@ -13,6 +12,7 @@ import {
   getAllMessage,
   sendAMessage,
 } from "@/config/redux/action/messageAction";
+import { ADD_MESSAGE } from "@/config/redux/reducer/messageReducer";
 
 export default function Messages() {
   const dispatch = useDispatch();
@@ -21,72 +21,65 @@ export default function Messages() {
     (state) => state.auth
   );
   const { fetchedChats } = useSelector((state) => state.chats);
-  const messageState = useSelector((state) => state.message);
-  const { fetchedMessages, messagesfetched } = messageState;
-  console.log(messagesfetched);
+  const { fetchedMessages } = useSelector((state) => state.message);
 
-  const user = ownProfileData?.userId;
+  const user = ownProfileData;
+
+  const activeChatIdRef = useRef(null);
 
   /* ================= LOCAL STATE ================= */
   const [query, setQuery] = useState("");
   const [newMessage, setNewMessage] = useState("");
   const [chatId, setChatId] = useState("");
+  const [showChatScreen, setShowChatScreen] = useState(false);
+
   const [selectedUserData, setSelectedUserData] = useState({
     name: "",
     profilePicture: "",
   });
-  const [socketConnected, setSocketConnected] = useState(false);
 
-  /* ================= LOAD PROFILE ================= */
-
+  /* ================= INIT ================= */
   useEffect(() => {
     dispatch(getOwnProfile());
-  }, [dispatch]);
-
-  /* ================= FETCH CHATS ================= */
-  useEffect(() => {
     dispatch(fetchTheChats());
   }, [dispatch]);
 
-  /* ================= SOCKET SETUP ================= */
+  useEffect(() => {
+    activeChatIdRef.current = chatId;
+  }, [chatId]);
+
+  /* ================= SOCKET ================= */
   useEffect(() => {
     if (!user?._id) return;
 
     socket.emit("setup", user);
 
-    const onConnect = () => {
-      setSocketConnected(true);
-    };
-
-    const onMessageReceived = (msg) => {
-      if (msg.chat._id === chatId) {
-        dispatch({
-          type: "ADD_MESSAGE",
-          payload: msg,
-        });
+    socket.on("message received", (msg) => {
+      if (msg.chat._id === activeChatIdRef.current) {
+        dispatch(ADD_MESSAGE(msg));
       }
-    };
-
-    socket.on("connected", onConnect);
-    socket.on("message received", onMessageReceived);
+    });
 
     return () => {
-      socket.off("connected", onConnect);
-      socket.off("message received", onMessageReceived);
+      socket.off("message received");
     };
-  }, [user?._id, chatId, dispatch]);
+  }, [user?._id, dispatch]);
 
   /* ================= SEND MESSAGE ================= */
   const sendMessage = async () => {
-    if (!newMessage.trim() || !chatId) return;
+    if (!newMessage.trim()) return;
 
-    const res = await dispatch(sendAMessage({ content: newMessage, chatId }));
+    const res = await dispatch(
+      sendAMessage({ content: newMessage, chatId })
+    );
+
     socket.emit("new message", res.payload);
+    dispatch(ADD_MESSAGE(res.payload));
+
     setNewMessage("");
-    dispatch(getAllMessage(chatId));
   };
 
-  /* ================= SEARCH USER ================= */
+  /* ================= SEARCH ================= */
   useEffect(() => {
     if (!query.trim()) return;
 
@@ -102,7 +95,11 @@ export default function Messages() {
     <ClientLayout>
       <div className={style.messageWrapper}>
         {/* ================= SIDEBAR ================= */}
-        <div className={style.sidebarUsers}>
+        <div
+          className={`${style.sidebarUsers} ${
+            showChatScreen ? style.hideOnMobile : ""
+          }`}
+        >
           <div className={style.queryContainer}>
             <input
               type="text"
@@ -113,19 +110,19 @@ export default function Messages() {
 
             {query.trim() && (
               <div className={style.searchResultBox}>
-                {searchLoading ? null : searchResult.length > 0 ? (
-                  searchResult.map((user) => (
+                {searchLoading ? null : searchResult.length ? (
+                  searchResult.map((u) => (
                     <div
-                      key={user._id}
+                      key={u._id}
                       className={style.usersFetch}
-                      onClick={async () => {
-                        await dispatch(accessTheChat(user._id));
+                      onClick={() => {
+                        dispatch(accessTheChat(u._id));
                         dispatch(fetchTheChats());
                         setQuery("");
                       }}
                     >
-                      <img src={user.profilePicture} alt={user.name} />
-                      <span>{user.name}</span>
+                      <img src={u.profilePicture} />
+                      <span>{u.name}</span>
                     </div>
                   ))
                 ) : (
@@ -136,51 +133,73 @@ export default function Messages() {
           </div>
 
           <div className={style.chatedUsers}>
-            {fetchedChats.map((chat) => (
-              <div
-                key={chat._id}
-                className={style.chatUser}
-                onClick={() => {
-                  setChatId(chat._id);
-                  // setSelectedUserData(chat._id)
-                  setSelectedUserData({
-                    name: chat.users[1].name,
-                    profilePicture: chat.users[1].profilePicture,
-                  });
-                  dispatch(getAllMessage(chat._id));
-                  socket.emit("join chat", chat._id);
-                }}
-              >
-                <img src={chat?.users[1]?.profilePicture} />
-                <span>{chat?.users[1]?.name}</span>
-              </div>
-            ))}
+            {fetchedChats.map((chat) => {
+              const otherUser =
+                chat.users[0]._id === user._id
+                  ? chat.users[1]
+                  : chat.users[0];
+
+              return (
+                <div
+                  key={chat._id}
+                  className={style.chatUser}
+                  onClick={() => {
+                    setChatId(chat._id);
+                    setShowChatScreen(true);
+                    setSelectedUserData({
+                      name: otherUser.name,
+                      profilePicture: otherUser.profilePicture,
+                    });
+
+                    dispatch(getAllMessage(chat._id));
+                    socket.emit("join chat", chat._id);
+                  }}
+                >
+                  <img src={otherUser.profilePicture} />
+                  <span>{otherUser.name}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
 
         {/* ================= CHAT ================= */}
-        <div className={style.messageContainer}>
-          {/* ================= INPUT ================= */}
+        <div
+          className={`${style.messageContainer} ${
+            showChatScreen ? style.showOnMobile : ""
+          }`}
+        >
           {chatId && (
-            <div>
+            <>
+              {/* HEADER */}
               <div className={style.selectedUserTag}>
+                <button
+                  className={style.backBtn}
+                  onClick={() => {
+                    setShowChatScreen(false);
+                    setChatId("");
+                  }}
+                >
+                  ←
+                </button>
+
                 <img src={selectedUserData.profilePicture} />
                 <p>{selectedUserData.name}</p>
               </div>
 
-              <div>
-                <div className={style.chatsContainer}>
-                  {fetchedMessages.map((msg) => (
-                    <div className={style.messageRow}>
-                      <div key={msg._id} className={style.messageThread}>
-                        <img src={msg.sender.profilePicture} />
-                        {msg.content}
-                      </div>
+              {/* MESSAGES */}
+              <div className={style.chatsContainer}>
+                {fetchedMessages.map((msg) => (
+                  <div key={msg._id} className={style.messageRow}>
+                    <div className={style.messageThread}>
+                      <img src={msg.sender.profilePicture} />
+                      {msg.content}
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
 
+              {/* INPUT */}
               <div className={style.messageInputContainer}>
                 <input
                   value={newMessage}
@@ -189,7 +208,7 @@ export default function Messages() {
                 />
                 <button onClick={sendMessage}>Send</button>
               </div>
-            </div>
+            </>
           )}
         </div>
       </div>
